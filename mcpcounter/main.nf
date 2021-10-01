@@ -22,7 +22,7 @@
   SOFTWARE.
 
   Authors:
-    Raquel Manzano
+    Raquel Manzano (rm889@cam.ac.uk)
 */
 
 /********************************************************************/
@@ -49,8 +49,13 @@ params.publish_dir = ""  // set to empty string will disable publishDir
 
 
 // tool specific parmas go here, add / change as needed
-params.input_file = ""
-params.output_pattern = "*"  // output file name pattern
+params.input = ""
+params.featuresType = ""  // output file name pattern
+params.probesets = ""  // output file name pattern
+params.genes = ""  // output file name pattern
+params.sep = ""  // output file name pattern
+params.output = ""  // output file name pattern
+
 
 
 process mcpcounter {
@@ -72,9 +77,9 @@ process mcpcounter {
     """
     mkdir -p output_dir
 
-    main.py \
-      -i ${input_file} \
-      -o output_dir
+    runMCPCounter.R \
+      --input ${input} \
+      --output output_dir
 
     """
 }
@@ -84,6 +89,6 @@ process mcpcounter {
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
   mcpcounter(
-    file(params.input_file)
+    file(params.input)
   )
 }
