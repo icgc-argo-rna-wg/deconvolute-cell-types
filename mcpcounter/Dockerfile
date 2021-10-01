@@ -10,8 +10,7 @@ RUN apt-get --allow-releaseinfo-change update  && \
 
 
 # install MCPCounter
-RUN /opt/conda/bin/conda install --yes -c conda-forge r-base=4.0.3 r-optparse=1.6.6
-RUN R -e "install.packages(c('devtools','curl'),dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN /opt/conda/bin/conda install --yes -c conda-forge r-base=4.0.3 r-optparse=1.6.6 r-devtools=2.4.2 r-curl=4.3.2 r-memoise=2.0.0
 RUN R -e "devtools::install_github('ebecht/MCPcounter',ref='master', subdir='Source')"
 
 # Add main wrapper:
