@@ -25,11 +25,6 @@
     Raquel Manzano
 */
 
-/*
- This is an auto-generated checker workflow to test the generated main template workflow, it's
- meant to illustrate how testing works. Please update to suit your own needs.
-*/
-
 /********************************************************************/
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
@@ -47,9 +42,12 @@ params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
-// tool specific parmas go here, add / change as needed
+// MCPCounter specific params - simplified for test
 params.input_file = ""
+params.output_file = ""
 params.expected_output = ""
+params.probesets = ""
+params.genes = ""
 
 include { mcpcounter } from '../main'
 
@@ -66,17 +64,7 @@ process file_smart_diff {
 
   script:
     """
-    # Note: this is only for demo purpose, please write your own 'diff' according to your own needs.
-    # in this example, we need to remove date field before comparison eg, <div id="header_filename">Tue 19 Jan 2021<br/>test_rg_3.bam</div>
-    # sed -e 's#"header_filename">.*<br/>test_rg_3.bam#"header_filename"><br/>test_rg_3.bam</div>#'
-
-    cat ${output_file[0]} \
-      | sed -e 's#"header_filename">.*<br/>#"header_filename"><br/>#' > normalized_output
-
-    ([[ '${expected_file}' == *.gz ]] && gunzip -c ${expected_file} || cat ${expected_file}) \
-      | sed -e 's#"header_filename">.*<br/>#"header_filename"><br/>#' > normalized_expected
-
-    diff normalized_output normalized_expected \
+    diff ${output_file} ${expected_file} \
       && ( echo "Test PASSED" && exit 0 ) || ( echo "Test FAILED, output file mismatch." && exit 1 )
     """
 }
@@ -85,23 +73,33 @@ process file_smart_diff {
 workflow checker {
   take:
     input_file
+    probesets
+    genes
+    output_file
     expected_output
 
   main:
     mcpcounter(
-      input_file
+      input_file,
+      probesets,
+      genes,
+      output_file
     )
 
     file_smart_diff(
-      mcpcounter.out.output_file,
+      mcpcounter.out.output,
       expected_output
     )
 }
 
-
+//println params
+//println params.input_file
 workflow {
   checker(
     file(params.input_file),
+    file(params.probesets),
+    file(params.genes),
+    params.output_file,
     file(params.expected_output)
   )
 }

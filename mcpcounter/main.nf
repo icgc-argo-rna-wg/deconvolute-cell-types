@@ -45,16 +45,16 @@ params.container = ""
 
 params.cpus = 1
 params.mem = 1  // GB
-params.publish_dir = ""  // set to empty string will disable publishDir
+params.publish_dir = "outdir"  // set to empty string will disable publishDir
 
 
-// tool specific parmas go here, add / change as needed
-params.input = ""
-params.featuresType = ""  // output file name pattern
-params.probesets = ""  // output file name pattern
-params.genes = ""  // output file name pattern
-params.sep = ""  // output file name pattern
-params.output = ""  // output file name pattern
+// MCPCounter specific params
+params.input_file = null
+params.featuresType = "HUGO_symbols"
+params.probesets = "reference/probesets.txt"
+params.genes = "reference/genes.txt"
+params.sep = "\t"
+params.output = "outdir/MCPCounter_scores.txt"
 
 
 
@@ -65,22 +65,20 @@ process mcpcounter {
   cpus params.cpus
   memory "${params.mem} GB"
 
-  input:  // input, make update as needed
-    path input_file
+  input:  // input and output name
+    file input_file
+    file probesets
+    file genes
+    file output_file
 
-  output:  // output, make update as needed
-    path "output_dir/${params.output_pattern}", emit: output_file
+  output:  // output
+    path "*", emit: output
 
-  script:
-    // add and initialize variables here as needed
-
+  shell:
     """
-    mkdir -p output_dir
+    mkdir -p outdir
 
-    runMCPCounter.R \
-      --input ${input} \
-      --output output_dir
-
+    Rscript --vanilla /tools/runMCPCounter.R  --input ${input_file} --output outdir/${output_file} --featuresType !{params.featuresType} --probesets ${probesets} --genes ${genes}
     """
 }
 
@@ -89,6 +87,9 @@ process mcpcounter {
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
   mcpcounter(
-    file(params.input)
+    file(params.input_file)
+    file(params.probesets)
+    file(params.genes)
+    file(params.output_file)
   )
 }

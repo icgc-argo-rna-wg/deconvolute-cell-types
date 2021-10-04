@@ -15,8 +15,9 @@ RUN R -e "devtools::install_github('ebecht/MCPcounter',ref='master', subdir='Sou
 
 # Add main wrapper:
 RUN mkdir -p /tools
-COPY runMCPCounter.R /tools/
 ENV PATH="/tools:${PATH}"
+COPY runMCPCounter.R /tools/
+
 
 ENTRYPOINT ["/usr/bin/env"]
 

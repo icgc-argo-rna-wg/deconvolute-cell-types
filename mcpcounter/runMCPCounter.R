@@ -32,7 +32,6 @@ parser <- OptionParser(usage = "%prog [options] [input matrix]", option_list = o
 arguments <- parse_args(parser, positional_arguments = TRUE)
 opt <- arguments$options
 
-print(opt$input)
 if (is.null(opt$input)) {
   stop("Input parameter must be provided through --input flag. See script usage (--help)")
 }
@@ -42,6 +41,7 @@ if (is.null(opt$input)) {
 message("- Calculating MCPCounter scores")
 # read input
 expr.matrix <- read.table(opt$input, sep = opt$sep, check.names=F)
+
 # calculate scores
 mcp.res <- MCPcounter.estimate(expression = expr.matrix,
                                featuresType = "HUGO_symbols",
@@ -57,3 +57,5 @@ mcp.res <- MCPcounter.estimate(expression = expr.matrix,
 # write output
 write.table(mcp.res, file=opt$output,sep='\t')
 message("- Done! See ", opt$output)
+
+warnings()
