@@ -51,8 +51,8 @@ params.publish_dir = "outdir"  // set to empty string will disable publishDir
 // MCPCounter specific params
 params.input_file = null
 params.featuresType = "HUGO_symbols"
-params.probesets = "reference/probesets.txt"
-params.genes = "reference/genes.txt"
+params.probesets = "tests/reference/probesets.txt"
+params.genes = "tests/reference/genes.txt"
 params.sep = "\t"
 params.output = "outdir/MCPCounter_scores.txt"
 
@@ -69,16 +69,16 @@ process mcpcounter {
     file input_file
     file probesets
     file genes
-    file output_file
+    val output_file
 
   output:  // output
-    path "*", emit: output
+    path "outdir/${output_file}", emit: output
 
-  shell:
+  script:
     """
     mkdir -p outdir
 
-    Rscript --vanilla /tools/runMCPCounter.R  --input ${input_file} --output outdir/${output_file} --featuresType !{params.featuresType} --probesets ${probesets} --genes ${genes}
+    Rscript --vanilla /tools/runMCPCounter.R  --input ${input_file} --output outdir/${output_file} --featuresType ${params.featuresType} --probesets ${probesets} --genes ${genes}
     """
 }
 
